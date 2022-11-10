@@ -2,8 +2,8 @@ import React from 'react';
 import { Formik, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { getContacts } from 'redux/selectors';
-import { addContact } from 'redux/contactsSlice';
+import { selectContacts } from 'redux/selectors';
+import { addContact } from 'redux/operations';
 import {
   FormAddContacts,
   Label,
@@ -57,7 +57,7 @@ const FormError = ({ name }) => {
 
 const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
+  const contacts = useSelector(selectContacts);
 
   const handleSubmit = (values, { resetForm }) => {
     const findContactByName = (array, newName) => {
@@ -67,11 +67,10 @@ const ContactForm = () => {
     const { name } = values;
     const normalizedName = name.toLowerCase();
 
-    if (findContactByName(contacts.items, normalizedName)) {
+    if (findContactByName(contacts, normalizedName)) {
       Notiflix.Notify.warning(`${name} is already in contacts`);
       return;
     }
-
     dispatch(addContact(values));
     resetForm();
   };

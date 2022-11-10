@@ -2,25 +2,25 @@ import React from 'react';
 import ContactItem from '../ContactItem';
 import Notification from '../Notification';
 import { useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'redux/selectors';
-import { List, WrapList, ListTitle } from './ContactList.styled';
+import { selectVisibleContacts, selectPendingStatus } from 'redux/selectors';
+import { List, WrapList, ListTitle, Item } from './ContactList.styled';
+import Loader from 'components/Loader';
 
 const ContactList = () => {
-  const filter = useSelector(getFilter);
-  const contacts = useSelector(getContacts);
-  const normalizedFilter = filter.value.toLowerCase();
-
-  const getVisibleContacts = contacts.items.filter(({ name }) =>
-    name?.toLowerCase()?.includes(normalizedFilter)
-  );
+  const contacts = useSelector(selectVisibleContacts);
+  const pending = useSelector(selectPendingStatus);
 
   return (
     <WrapList>
       <ListTitle>Contacts</ListTitle>
-      {contacts.items.length > 0 ? (
+      {pending ? (
+        <Loader />
+      ) : contacts.length > 0 ? (
         <List>
-          {getVisibleContacts.map(({ id, name, number }) => (
-            <ContactItem key={id} id={id} name={name} number={number} />
+          {contacts.map(({ id, name, phone }) => (
+            <Item key={id}>
+              <ContactItem id={id} name={name} phone={phone} />
+            </Item>
           ))}
         </List>
       ) : (
